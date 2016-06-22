@@ -80,6 +80,25 @@ static int str_sub (lua_State *L) {
   return 1;
 }
 
+static int str_split (lua_State *L) {
+  size_t l;
+  const char *s = luaL_checklstring(L, 1, &l);
+  const char delimiters[2] = " ";
+  lua_newtable(L);
+  char *token;
+  char str[l + 1];
+  strcpy(str, s);
+  token = strtok(str, delimiters);
+  int i = 1;
+  while (token != NULL) {
+    //printf("%d: %s\n", (int) i, token);    
+    lua_pushstring(L, token);
+    lua_seti(L, -2, i);
+    token = strtok(NULL, delimiters);
+    i += 1;
+  }
+  return 1;
+}
 
 static int str_reverse (lua_State *L) {
   size_t l, i;
@@ -1550,7 +1569,8 @@ static const luaL_Reg strlib[] = {
   {"match", str_match},
   {"rep", str_rep},
   {"reverse", str_reverse},
-  {"sub", str_sub},
+  {"split", str_split},
+  {"sub", str_sub},  
   {"upper", str_upper},
   {"pack", str_pack},
   {"packsize", str_packsize},
