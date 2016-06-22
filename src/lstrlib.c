@@ -80,6 +80,26 @@ static int str_sub (lua_State *L) {
   return 1;
 }
 
+static int iswhitespace(char c) {
+  return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v');
+}
+
+static int str_strip (lua_State *L) {
+  size_t l;
+  const char *s = luaL_checklstring(L, 1, &l);  
+  size_t start = 0;
+  while (start < l) {
+    if (!iswhitespace(s[start])) break;
+    start += 1;
+  }
+  size_t end = l - 1;
+  while (end > start) {
+    if (!iswhitespace(s[end])) break;
+    end -= 1;
+  }
+  lua_pushlstring(L, s + start, (size_t)(end - start) + 1);
+  return 1;
+}
 
 static int str_reverse (lua_State *L) {
   size_t l, i;
@@ -1550,6 +1570,7 @@ static const luaL_Reg strlib[] = {
   {"match", str_match},
   {"rep", str_rep},
   {"reverse", str_reverse},
+  {"strip", str_strip},
   {"sub", str_sub},
   {"upper", str_upper},
   {"pack", str_pack},
