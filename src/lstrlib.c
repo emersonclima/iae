@@ -80,6 +80,21 @@ static int str_sub (lua_State *L) {
   return 1;
 }
 
+static int str_startswith(lua_State *L) {
+  const char *a = luaL_checkstring(L, 1);
+  const char *b = luaL_checkstring(L, 2);
+  lua_pushboolean(L, strstr(a, b) == a);
+  return 1;
+}
+
+static int str_endswith(lua_State *L) {
+  size_t la, lb;
+  const char *a = luaL_checklstring(L, 1, &la);
+  const char *b = luaL_checklstring(L, 2, &lb);  
+  lua_pushboolean(L, lb <= la && strstr(a, b) == a + la - lb);
+  return 1;
+}
+
 static int str_split (lua_State *L) {
   size_t l;
   const char *s = luaL_checklstring(L, 1, &l);
@@ -97,6 +112,8 @@ static int str_split (lua_State *L) {
     token = strtok(NULL, delimiters);
     i += 1;
   }
+  return 1;
+}
 
 static int iswhitespace(char c) {
   return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v');
@@ -1579,6 +1596,7 @@ static const luaL_Reg strlib[] = {
   {"byte", str_byte},
   {"char", str_char},
   {"dump", str_dump},
+  {"endswith", str_endswith},
   {"find", str_find},
   {"format", str_format},
   {"gmatch", gmatch},
@@ -1589,6 +1607,7 @@ static const luaL_Reg strlib[] = {
   {"rep", str_rep},
   {"reverse", str_reverse},
   {"split", str_split},
+  {"startswith", str_startswith},
   {"strip", str_strip},
   {"sub", str_sub},  
   {"upper", str_upper},
